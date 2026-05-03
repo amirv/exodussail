@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh tracked location gist
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=__RUN_USER__
+WorkingDirectory=__REPO_DIR__
+EnvironmentFile=/etc/exodussail/exodussail.env
+ExecStart=__REPO_DIR__/update.sh

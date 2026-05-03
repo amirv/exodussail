@@ -1,0 +1,10 @@
+exodussail.kml
+exodussail.csv
+exodussail.gpx
+exodussail.geojson
+.gist_id
+plan
+
+# plugin build/deps
+plugin/node_modules/
+plugin/dist/
