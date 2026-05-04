@@ -1,82 +1,126 @@
-<section class="plugin__content">
-    <div
-        class="plugin__title plugin__title--chevron-back"
-        on:click={() => bcast.emit('rqstOpen', 'menu')}
-    >
-        {title}
-    </div>
-
-    <div class="header mb-15">
-        <div class="size-l">Exodussail</div>
-        <div class="size-xs muted">Daniel Pinsky · Garmin inReach Mini 2</div>
-    </div>
-
-    {#if loading && !data}
-        <div class="muted">Loading track…</div>
-    {:else if error}
-        <div class="error">Error: {error}</div>
-        <div class="mt-10">
-            <button class="button button--variant-orange size-s" on:click={refresh}>
-                Retry
-            </button>
-        </div>
-    {:else if latest}
-        <div class="latest mb-15">
-            <div><strong>Last fix:</strong> {relativeTime}</div>
-            <div class="size-xs muted">{latest.time}</div>
-            <div class="size-xs">
-                Speed: {latest.velocity_kmh.toFixed(1)} km/h ({(latest.velocity_kmh / 1.852).toFixed(1)} kn)
+{#if isMobileOrTablet}
+    <section class="mobile-strip horizontal-scroll">
+        {#if loading && !data}
+            <div class="mobile-block muted">Loading track…</div>
+        {:else if error}
+            <div class="mobile-block error clickable" on:click={refresh}>
+                <div class="size-xs">Error · tap to retry</div>
+                <div class="size-xs">{error}</div>
             </div>
-            <div class="size-xs">Course: {Math.round(latest.course_deg)}°</div>
-            {#if !latest.valid_gps_fix}
-                <div class="size-xs error">GPS fix invalid</div>
-            {/if}
-        </div>
-
-        <div class="stats mb-15 size-xs">
-            <div>Points: {pointCount.toLocaleString()}</div>
-            <div>Distance: {totalKm.toFixed(0)} km · {(totalKm / 1.852).toFixed(0)} nm</div>
-            <div>Max speed: {maxKmh.toFixed(1)} km/h</div>
-        </div>
-
-        <div class="legend mb-15">
-            <div class="size-xs muted mb-5">Speed (km/h)</div>
-            <div class="legend__bar"></div>
-            <div class="legend__ticks size-xs muted">
-                <span>0</span>
-                <span>{(SPEED_MAX_KMH / 2).toFixed(0)}</span>
-                <span>{SPEED_MAX_KMH}+</span>
+        {:else if latest}
+            <div class="mobile-block clickable" on:click={zoomToLatest}>
+                <div class="size-l">Exodussail</div>
+                <div class="size-xs muted">{relativeTime}</div>
+                <div class="size-xs">
+                    {latest.velocity_kmh.toFixed(1)} km/h · {Math.round(latest.course_deg)}°
+                </div>
             </div>
-        </div>
-
-        <div class="slider mb-15 size-xs">
-            <div class="muted mb-5">Time slider position</div>
+            <div class="mobile-block">
+                <div class="size-xs muted">Track</div>
+                <div class="size-xs">
+                    {pointCount.toLocaleString()} pts · {totalKm.toFixed(0)} km
+                </div>
+                <div class="size-xs">Max {maxKmh.toFixed(1)} km/h</div>
+            </div>
             {#if sliderInfo}
-                <div>{sliderInfo.timeUtc}</div>
-                <div>{formatLatLon(sliderInfo.lat, sliderInfo.lon)}</div>
-                {#if sliderInfo.kmh !== null}
-                    <div>~ {sliderInfo.kmh.toFixed(1)} km/h</div>
-                {/if}
-            {:else}
-                <div class="muted">(slider outside track range)</div>
+                <div class="mobile-block">
+                    <div class="size-xs muted">At slider</div>
+                    <div class="size-xs">{formatLatLon(sliderInfo.lat, sliderInfo.lon)}</div>
+                    {#if sliderInfo.kmh !== null}
+                        <div class="size-xs">~ {sliderInfo.kmh.toFixed(1)} km/h</div>
+                    {/if}
+                </div>
             {/if}
+            <div class="mobile-block clickable" on:click={refresh}>
+                <div class="size-s">Refresh</div>
+            </div>
+            <div class="mobile-block clickable" on:click={zoomToTrack}>
+                <div class="size-s">Fit track</div>
+            </div>
+        {/if}
+    </section>
+{:else}
+    <section class="plugin__content">
+        <div
+            class="plugin__title plugin__title--chevron-back"
+            on:click={() => bcast.emit('rqstOpen', 'menu')}
+        >
+            {title}
         </div>
 
-        <div class="buttons mb-15">
-            <button class="button size-s" on:click={refresh}>Refresh</button>
-            <button class="button size-s" on:click={zoomToTrack}>Fit track</button>
-            <button class="button size-s" on:click={zoomToLatest}>Latest</button>
+        <div class="header mb-15">
+            <div class="size-l">Exodussail</div>
+            <div class="size-xs muted">Daniel Pinsky · Garmin inReach Mini 2</div>
         </div>
 
-        <div class="size-xs muted">
-            Source: GitHub gist · fetched {fetchedRelative}
-        </div>
-    {/if}
-</section>
+        {#if loading && !data}
+            <div class="muted">Loading track…</div>
+        {:else if error}
+            <div class="error">Error: {error}</div>
+            <div class="mt-10">
+                <button class="button button--variant-orange size-s" on:click={refresh}>
+                    Retry
+                </button>
+            </div>
+        {:else if latest}
+            <div class="latest mb-15">
+                <div><strong>Last fix:</strong> {relativeTime}</div>
+                <div class="size-xs muted">{latest.time}</div>
+                <div class="size-xs">
+                    Speed: {latest.velocity_kmh.toFixed(1)} km/h ({(latest.velocity_kmh / 1.852).toFixed(1)} kn)
+                </div>
+                <div class="size-xs">Course: {Math.round(latest.course_deg)}°</div>
+                {#if !latest.valid_gps_fix}
+                    <div class="size-xs error">GPS fix invalid</div>
+                {/if}
+            </div>
+
+            <div class="stats mb-15 size-xs">
+                <div>Points: {pointCount.toLocaleString()}</div>
+                <div>Distance: {totalKm.toFixed(0)} km · {(totalKm / 1.852).toFixed(0)} nm</div>
+                <div>Max speed: {maxKmh.toFixed(1)} km/h</div>
+            </div>
+
+            <div class="legend mb-15">
+                <div class="size-xs muted mb-5">Speed (km/h)</div>
+                <div class="legend__bar"></div>
+                <div class="legend__ticks size-xs muted">
+                    <span>0</span>
+                    <span>{(SPEED_MAX_KMH / 2).toFixed(0)}</span>
+                    <span>{SPEED_MAX_KMH}+</span>
+                </div>
+            </div>
+
+            <div class="slider mb-15 size-xs">
+                <div class="muted mb-5">Time slider position</div>
+                {#if sliderInfo}
+                    <div>{sliderInfo.timeUtc}</div>
+                    <div>{formatLatLon(sliderInfo.lat, sliderInfo.lon)}</div>
+                    {#if sliderInfo.kmh !== null}
+                        <div>~ {sliderInfo.kmh.toFixed(1)} km/h</div>
+                    {/if}
+                {:else}
+                    <div class="muted">(slider outside track range)</div>
+                {/if}
+            </div>
+
+            <div class="buttons mb-15">
+                <button class="button size-s" on:click={refresh}>Refresh</button>
+                <button class="button size-s" on:click={zoomToTrack}>Fit track</button>
+                <button class="button size-s" on:click={zoomToLatest}>Latest</button>
+            </div>
+
+            <div class="size-xs muted">
+                Source: GitHub gist · fetched {fetchedRelative}
+            </div>
+        {/if}
+    </section>
+{/if}
 
 <script lang="ts">
     import bcast from '@windy/broadcast';
     import { map } from '@windy/map';
+    import { isMobileOrTablet } from '@windy/rootScope';
     import store from '@windy/store';
     import { onDestroy, onMount } from 'svelte';
 
@@ -450,5 +494,23 @@
     }
     .mb-15 {
         margin-bottom: 15px;
+    }
+    .mobile-strip {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 8px;
+        padding: 6px 8px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    .mobile-block {
+        flex: 0 0 auto;
+        padding: 4px 10px;
+        border-left: 3px solid #ff9500;
+        line-height: 1.3;
+    }
+    .clickable {
+        cursor: pointer;
     }
 </style>

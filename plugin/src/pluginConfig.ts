@@ -2,7 +2,7 @@ import type { ExternalPluginConfig } from '@windy/interfaces';
 
 const config: ExternalPluginConfig = {
     name: 'windy-plugin-exodussail',
-    version: '1.0.0',
+    version: '1.0.1',
     icon: '⛵',
     title: 'Exodussail',
     description:
@@ -11,7 +11,7 @@ const config: ExternalPluginConfig = {
     repository: 'https://github.com/amirv/exodussail',
     homepage: 'https://share.garmin.com/Exodussail',
     desktopUI: 'rhpane',
-    mobileUI: 'fullscreen',
+    mobileUI: 'small',
     desktopWidth: 280,
     routerPath: '/exodussail',
 };
